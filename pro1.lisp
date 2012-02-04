@@ -1,0 +1,7 @@
+(defun pro1 (num)
+  (let ((sum 0))
+    (loop for i from 1 to (1- num)
+       do (if (or (zerop (mod i 3))
+		  (zerop (mod i 5)))
+	      (incf sum i)))
+    sum))
