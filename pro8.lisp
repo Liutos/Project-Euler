@@ -1,0 +1,15 @@
+(defun digstr-prod (digstr)
+  (apply #'* (map 'list #'(lambda (c)
+			    (- (char-code c) (char-code #\0)))
+		  digstr)))
+
+(defun pro8 (digit-string)
+  (let ((max 0))
+    (dotimes (i 996)
+      (let ((num (digstr-prod (subseq digit-string i (+ 5 i)))))
+	(if (> num max)
+	    (setf max num))))
+    max))
+
+(with-open-file (s "pro8.txt")
+  (pro8 (read-line s nil 'eof)))
