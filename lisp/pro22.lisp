@@ -1,0 +1,22 @@
+(ql:quickload "cl-ppcre")
+
+(defun name-score (name-word pos)
+  (* pos
+     (apply #'+ (map 'list #'(lambda (c)
+			       (1+ (- (char-code c)
+				      (char-code #\A))))
+		     name-word))))
+
+(defun pro22 ()
+  (with-open-file (stream "names.txt")
+    (let ((name-list (sort (cl-ppcre:split "," (read-line stream))
+			   #'string<=))
+	  (sum 0)
+	  (index 1))
+      (dolist (nm name-list)
+	(incf sum (name-score ((lambda (name)
+				 (let ((len (length name)))
+				   (subseq name 1 (- len 1))))
+			       nm) index))
+	(incf index))
+      sum)))
