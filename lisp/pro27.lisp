@@ -1,0 +1,35 @@
+(declaim (optimize (speed 3)))
+
+(defun primep (n)
+  (labels ((rec (test)
+	     (if (> (* test test) n)
+		 t
+		 (if (zerop (mod n test))
+		     nil
+		     (rec (1+ test))))))
+    (and (/= 1 n)
+	 (rec 2))))
+
+(defun cons-form (a b)
+  #'(lambda (n)
+      (+ (* n (+ n a)) b)))
+
+(defun prime-len (fn)
+  (labels ((rec (acc test-n)
+	     (if (primep (funcall fn test-n))
+		 (rec (1+ acc) (1+ test-n))
+		 acc)))
+    (rec 0 0)))
+
+(defun pro27 ()
+  (let ((prod)
+	(score 0))
+    (do ((a -999 (1+ a)))
+	((<= 1000 a))
+      (do ((b -999 (+ b 2)))
+	  ((>= b 100))
+	(let ((len (prime-len (cons-form a b))))
+	  (if (> len score)
+	      (setf prod (* a b)
+		    score len)))))
+    (values prod score)))
