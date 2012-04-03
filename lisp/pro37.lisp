@@ -1,0 +1,33 @@
+(proclaim '(optimize speed))
+
+(defun primep (number)
+  (let ((bnd (truncate (sqrt number))))
+    (labels ((rec (test)
+	       (cond ((> test bnd) t)
+		     ((= 0 (rem number test)) nil)
+		     (t (rec (+ test 2))))))
+      (cond ((= 1 number) nil)
+	    ((= 2 number) t)
+	    ((= 0 (rem number 2)) nil)
+	    (t (rec 3))))))
+
+(defun left-right-prime-p (number)
+  (labels ((rec (test)
+	     (if (> test number)
+		 t
+		 (let* ((right-ptr (rem number test))
+			(left-ptr (/ (- number right-ptr) test)))
+		   (if (and (primep right-ptr) (primep left-ptr))
+		       (rec (* 10 test))
+		       nil)))))
+    (and (primep number)
+	 (rec 10))))
+
+(defun pro37 ()
+  (labels ((rec (acc cnt test)
+	     (if (= 11 cnt)
+		 acc
+		 (if (left-right-prime-p test)
+		     (rec (+ acc test) (1+ cnt) (+ test 2))
+		     (rec acc cnt (+ test 2))))))
+    (rec 0 0 11)))
