@@ -1,0 +1,45 @@
+(proclaim '(optimize speed))
+
+(defun number-length (number)
+  (labels ((rec (acc n)
+	     (if (= 0 n)
+		 acc
+		 (rec (1+ acc) (truncate (/ n 10))))))
+    (if (= 0 number) 1 (rec 0 number))))
+
+(defun pandigitalp (number)
+  (let ((len (number-length number)))
+    (let ((aux (make-array `(,len) :initial-element 0)))
+      (labels ((rec (n)
+		 (if (= 0 n)
+		     (every #'(lambda (x) (= 1 x)) aux)
+		     (let ((lsb (rem n 10)))
+		       (cond ((or (= 0 lsb) (> lsb len))
+			      (return-from pandigitalp nil))
+			     (t
+			      (incf (aref aux (1- lsb)))
+			      (if (> (aref aux (1- lsb)) 1)
+				  (return-from pandigitalp nil))
+			      (rec (/ (- n lsb) 10))))))))
+	(if (= 0 number) nil (rec number))))))
+
+(defun primep (number)
+  (let ((bnd (ceiling (sqrt number))))
+    (labels ((rec (test)
+	       (cond ((> test bnd) t)
+		     ((= 0 (rem number test)) nil)
+		     (t (rec (+ test 2))))))
+      (cond ((= 1 number) nil)
+	    ((= 2 number) t)
+	    ((= 0 (rem number 2)) nil)
+	    (t (rec 3))))))
+
+(defun pro41 ()
+  (labels ((rec (test)
+	     (if (< test 1)
+		 "Anwser not found"
+		 (if (and (pandigitalp test)
+			  (primep test))
+		     test
+		     (rec (- test 2))))))
+    (rec 7654321)))

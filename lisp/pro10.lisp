@@ -1,3 +1,5 @@
+(declaim (optimize (speed 3)))
+
 (defun primep (number)
   (labels ((rec (n)
 	     (if (> (* n n) number)
@@ -5,13 +7,13 @@
 		 (if (zerop (rem number n))
 		     nil
 		     (rec (1+ n))))))
-    (and (/= 1 number)
-	 (rec 2))))
+    (rec 2)))
 
 (defun pro10 ()
-  (let ((sum 0))
+  (let ((sum 2))
     (loop
-       :for n :from 1 :upto 2000000
+       :for n :from 3 :upto 2000000 :by 2
        :do (if (primep n)
-	       (incf sum n)))
+	       (incf sum
+		     (the fixnum n))))
     sum))

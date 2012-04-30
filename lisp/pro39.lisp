@@ -1,0 +1,21 @@
+(defun triangle-numbers (n)
+  (labels ((rec (acc tt ts)
+	     (cond ((or (> (* ts tt) n)
+			(> (/ (- (* ts ts) (* ts ts)) 2) n))
+		    acc)
+		   ((> (* ts (+ tt ts)) n)
+		    (rec acc (1+ tt) (+ tt 2)))
+		   ((or (= n (* ts (+ tt ts)))
+			(= 0 (rem n (* ts (+ ts ts)))))
+		    (rec (1+ acc) tt (1+ ts)))
+		   (t (rec acc tt (1+ ts))))))
+    (rec 0 1 2)))
+
+(defun pro39 ()
+  (let ((max 0) (win 0))
+    (loop :for i :from 1 :upto 1000
+       :do (let ((score (triangle-numbers i)))
+	     (if (> score win)
+		 (setf max i
+		       win score))))
+    (values max win)))
