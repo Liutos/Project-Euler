@@ -1,24 +1,54 @@
-(declaim (optimize (speed 3) (safety 0) (debug 0) (space 0)))
+(proclaim '(optimize speed))
 
-(defun next-ary (ary)
-  (let ((len (length ary)))
-    (labels ((rec (left right)
-	       (cond ((zerop left) ary)
-		     ((< right 0)
-		      (rec (1- left) (- left 2)))
-		     ((> (aref ary left)
-			 (aref ary right))
-		      (rotatef (aref ary left)
-			       (aref ary right))
-		      (let ((prt1 (subseq ary 0 (1+ right)))
-			    (prt2 (subseq ary (1+ right))))
-			(concatenate 'vector prt1 (sort prt2 #'<))))
-		     (t (rec left (1- right))))))
-      (rec (1- len) (- len 2)))))
+(defun divisor-sum (n)
+  (let ((limit (truncate (sqrt n))))
+    (labels ((aux (acc test)
+	       (cond ((> test limit) acc)
+		     ((zerop (rem n test))
+		      (aux (+ acc test (/ n test))
+			   (1+ test)))
+		     (t (aux acc (1+ test))))))
+      (aux 1 2))))
 
-(defun pro23 (ary cnt)
-  (labels ((rec (a c)
-	     (if (= cnt c)
-		 a
-		 (rec (next-ary a) (1+ c)))))
-    (rec ary 1)))
+(defun abundant-number-p (n)
+  (the boolean
+    (> (divisor-sum n) n)))
+
+(defparameter *abundants* '())
+(defparameter *ahs*
+  (make-hash-table))
+
+(defun get-abundants ()
+  (loop
+     :for i :from 12 :to 28123
+     :when (abundant-number-p i)
+     :collect i))
+
+(defun fill-abundant-hash-table ()
+  (dolist (n *abundants*)
+    (setf (gethash n *ahs*) t)))
+
+(defun in-abundants-p (n)
+  ;; (labels ((aux (abundants)
+  ;; 	     (cond ((null abundants) nil)
+  ;; 		   ((= (car abundants) n) t)
+  ;; 		   ((> (car abundants) n) nil)
+  ;; 		   (t (aux (cdr abundants))))))
+  ;;   (the boolean
+  ;;     (aux *abundants*)))
+  (the boolean
+    (gethash n *ahs*)))
+
+(defun abundant-sum-p (n)
+  (labels ((aux (abundants)
+	     (cond ((null abundants) nil)
+		   ((< n (car abundants)) nil)
+		   ((in-abundants-p (- n (car abundants))))
+		   (t (aux (cdr abundants))))))
+    (aux *abundants*)))
+
+(defun pro23 ()
+  (loop
+     :for i :from 24 :to 28123
+     :when (abundant-sum-p i)
+     :sum i))
