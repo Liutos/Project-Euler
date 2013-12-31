@@ -1,10 +1,2 @@
-(defn rec [n sum num]
-  (if (>= n num)
-    sum
-    (if (or (= 0 (mod n 3))
-            (= 0 (mod n 5)))
-      (rec (+ n 1) (+ sum n) num)
-      (rec (+ n 1) sum num))))
-
-(defn pro1 [num]
-  (rec 1 0 num))
+(defn p1 [n]
+  (apply + (filter #(or (= 0 (mod % 3)) (= 0 (mod % 5))) (range 1 n))))
