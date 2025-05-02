@@ -55,7 +55,7 @@
   (let ((seen (make-hash-table))
         (sum 0))
     (loop
-      :for i :from 1 :to (- 123456789 1)
+      :for i :from 1 :to 999           ; i 不能超过 3 位数，所以最大是 999。
       :do (cond ((check-have-dup-digit i))
                 (t
                  (loop
